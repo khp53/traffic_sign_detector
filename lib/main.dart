@@ -213,15 +213,20 @@ class FuturisticHome extends StatelessWidget {
                     ? SingleChildScrollView(
                         key: const ValueKey('vertical'),
                         padding: const EdgeInsets.symmetric(
-                          vertical: 48,
+                          vertical: 20,
                           horizontal: 20,
                         ),
-                        child: Column(
-                          children: [
-                            SizedBox(width: leftWidth, child: preview),
-                            const SizedBox(height: 56),
-                            controls,
-                          ],
+                        child: SafeArea(
+                          child: SizedBox(
+                            height: constraints.maxHeight,
+                            child: Column(
+                              children: [
+                                SizedBox(width: leftWidth, child: preview),
+                                const SizedBox(height: 56),
+                                controls,
+                              ],
+                            ),
+                          ),
                         ),
                       )
                     : Row(
