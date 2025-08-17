@@ -23,13 +23,13 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.dark,
           primary: neonGreen,
           secondary: neonGreen,
-          background: darkBg,
+          surface: darkBg,
         ),
         textTheme: GoogleFonts.orbitronTextTheme(
           ThemeData.dark().textTheme,
         ).apply(bodyColor: neonGreen, displayColor: neonGreen),
         appBarTheme: AppBarTheme(
-          backgroundColor: darkBg.withOpacity(0.9),
+          backgroundColor: darkBg.withAlpha(170),
           elevation: 0,
           titleTextStyle: GoogleFonts.orbitron(
             fontSize: 18,
@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
                 ButtonStyle(
                   overlayColor: WidgetStateProperty.resolveWith(
                     (states) => states.contains(WidgetState.pressed)
-                        ? neonGreen.withOpacity(0.2)
+                        ? neonGreen.withAlpha(51)
                         : null,
                   ),
                 ),
@@ -97,13 +97,10 @@ class FuturisticHome extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.black,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: neonGreen.withOpacity(0.6),
-                    width: 2,
-                  ),
+                  border: Border.all(color: neonGreen.withAlpha(170), width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: neonGreen.withOpacity(0.25),
+                      color: neonGreen.withAlpha(51),
                       blurRadius: 16,
                       spreadRadius: 2,
                       offset: const Offset(0, 0),
@@ -116,7 +113,7 @@ class FuturisticHome extends StatelessWidget {
                     Positioned.fill(
                       child: CustomPaint(
                         painter: _ScanOverlayPainter(
-                          color: neonGreen.withOpacity(0.12),
+                          color: neonGreen.withAlpha(51),
                         ),
                       ),
                     ),
@@ -140,19 +137,16 @@ class FuturisticHome extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  Colors.white.withOpacity(0.02),
-                  Colors.white.withOpacity(0.005),
-                ],
+                colors: [Colors.white.withAlpha(10), Colors.white.withAlpha(2)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               border: Border(
                 left: isVertical
                     ? BorderSide.none
-                    : BorderSide(color: neonGreen.withOpacity(0.2), width: 1),
+                    : BorderSide(color: neonGreen.withAlpha(170), width: 1),
                 top: isVertical
-                    ? BorderSide(color: neonGreen.withOpacity(0.2), width: 1)
+                    ? BorderSide(color: neonGreen.withAlpha(51), width: 1)
                     : BorderSide.none,
               ),
             ),
@@ -166,7 +160,7 @@ class FuturisticHome extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     letterSpacing: 6,
                     shadows: [
-                      Shadow(color: neonGreen.withOpacity(0.6), blurRadius: 12),
+                      Shadow(color: neonGreen.withAlpha(170), blurRadius: 12),
                     ],
                   ),
                   textAlign: TextAlign.center,
@@ -248,7 +242,7 @@ class _GlowButton extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: neonGreen.withOpacity(0.4),
+            color: neonGreen.withAlpha(51),
             blurRadius: 20,
             spreadRadius: 1,
           ),
@@ -302,7 +296,7 @@ class _ScanOverlayPainter extends CustomPainter {
     addCorner(0, 0, false, true);
     addCorner(0, 0, true, true);
     final bracketPaint = Paint()
-      ..color = color.withOpacity(0.8)
+      ..color = color.withAlpha(204)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3
       ..strokeJoin = StrokeJoin.round
