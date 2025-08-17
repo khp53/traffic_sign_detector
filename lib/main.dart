@@ -79,147 +79,169 @@ class FuturisticHome extends StatelessWidget {
     final theme = Theme.of(context);
     final neonGreen = theme.colorScheme.primary;
     return Scaffold(
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final isVertical =
-              constraints.maxWidth < 900; // stack on small screens
-          final leftWidth = isVertical
-              ? constraints.maxWidth
-              : constraints.maxWidth / 2;
-          final rightWidth = isVertical
-              ? constraints.maxWidth
-              : constraints.maxWidth / 2;
+      body: Stack(
+        children: [
+          // Global background scan grid overlay
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _GridPainter(color: neonGreen.withAlpha(40)),
+            ),
+          ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isVertical =
+                  constraints.maxWidth < 900; // stack on small screens
+              final leftWidth = isVertical
+                  ? constraints.maxWidth
+                  : constraints.maxWidth / 2;
+              final rightWidth = isVertical
+                  ? constraints.maxWidth
+                  : constraints.maxWidth / 2;
 
-          final preview = Center(
-            child: AspectRatio(
-              aspectRatio: 16 / 9,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: neonGreen.withAlpha(170), width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: neonGreen.withAlpha(51),
-                      blurRadius: 16,
-                      spreadRadius: 2,
-                      offset: const Offset(0, 0),
-                    ),
-                  ],
-                ),
-                child: Stack(
-                  children: [
-                    // Placeholder scan lines / grid overlay
-                    Positioned.fill(
-                      child: CustomPaint(
-                        painter: _ScanOverlayPainter(
+              final preview = Center(
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: neonGreen.withAlpha(170),
+                        width: 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
                           color: neonGreen.withAlpha(51),
+                          blurRadius: 16,
+                          spreadRadius: 2,
+                          offset: const Offset(0, 0),
                         ),
-                      ),
-                    ),
-                    Center(
-                      child: Text(
-                        '16:9 WINDOW',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          letterSpacing: 4,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-
-          final controls = Container(
-            width: rightWidth,
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.white.withAlpha(10), Colors.white.withAlpha(2)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              border: Border(
-                left: isVertical
-                    ? BorderSide.none
-                    : BorderSide(color: neonGreen.withAlpha(170), width: 1),
-                top: isVertical
-                    ? BorderSide(color: neonGreen.withAlpha(51), width: 1)
-                    : BorderSide.none,
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'TRAFFIC SIGN DETECTOR',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 6,
-                    shadows: [
-                      Shadow(color: neonGreen.withAlpha(170), blurRadius: 12),
-                    ],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 48),
-                Wrap(
-                  spacing: 24,
-                  runSpacing: 24,
-                  alignment: WrapAlignment.center,
-                  children: [
-                    _GlowButton(
-                      label: 'START',
-                      icon: Icons.play_arrow,
-                      onPressed: () {},
-                    ),
-                    _GlowButton(
-                      label: 'START 2',
-                      icon: Icons.bolt,
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          );
-
-          return AnimatedSwitcher(
-            duration: const Duration(milliseconds: 400),
-            child: isVertical
-                ? SingleChildScrollView(
-                    key: const ValueKey('vertical'),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 48,
-                      horizontal: 20,
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(width: leftWidth, child: preview),
-                        const SizedBox(height: 56),
-                        controls,
                       ],
                     ),
-                  )
-                : Row(
-                    key: const ValueKey('horizontal'),
-                    children: [
-                      Expanded(
-                        child: Center(
-                          child: SizedBox(
-                            width: leftWidth * 0.9,
-                            child: preview,
+                    // Placeholder for future live camera feed + corner brackets overlay
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: CustomPaint(
+                            painter: _CornerBracketsPainter(
+                              color: neonGreen.withAlpha(230),
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(width: rightWidth, child: controls),
-                    ],
+                        Center(
+                          child: Text(
+                            'LIVE FEED',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              letterSpacing: 4,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-          );
-        },
+                ),
+              );
+
+              final controls = Container(
+                width: rightWidth,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 40,
+                ),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.white.withAlpha(10),
+                      Colors.white.withAlpha(2),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  border: Border(
+                    left: isVertical
+                        ? BorderSide.none
+                        : BorderSide(color: neonGreen.withAlpha(170), width: 1),
+                    top: isVertical
+                        ? BorderSide(color: neonGreen.withAlpha(51), width: 1)
+                        : BorderSide.none,
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'TRAFFIC SIGN DETECTOR',
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 6,
+                        shadows: [
+                          Shadow(
+                            color: neonGreen.withAlpha(170),
+                            blurRadius: 12,
+                          ),
+                        ],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 48),
+                    Wrap(
+                      spacing: 24,
+                      runSpacing: 24,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        _GlowButton(
+                          label: 'START',
+                          icon: Icons.play_arrow,
+                          onPressed: () {},
+                        ),
+                        _GlowButton(
+                          label: 'START 2',
+                          icon: Icons.bolt,
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 400),
+                child: isVertical
+                    ? SingleChildScrollView(
+                        key: const ValueKey('vertical'),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 48,
+                          horizontal: 20,
+                        ),
+                        child: Column(
+                          children: [
+                            SizedBox(width: leftWidth, child: preview),
+                            const SizedBox(height: 56),
+                            controls,
+                          ],
+                        ),
+                      )
+                    : Row(
+                        key: const ValueKey('horizontal'),
+                        children: [
+                          Expanded(
+                            child: Center(
+                              child: SizedBox(
+                                width: leftWidth * 0.9,
+                                child: preview,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: rightWidth, child: controls),
+                        ],
+                      ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -257,9 +279,9 @@ class _GlowButton extends StatelessWidget {
   }
 }
 
-class _ScanOverlayPainter extends CustomPainter {
+class _GridPainter extends CustomPainter {
   final Color color;
-  _ScanOverlayPainter({required this.color});
+  _GridPainter({required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -267,8 +289,6 @@ class _ScanOverlayPainter extends CustomPainter {
       ..color = color
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
-
-    // Draw grid lines
     const grid = 20.0;
     for (double x = 0; x <= size.width; x += grid) {
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
@@ -276,12 +296,23 @@ class _ScanOverlayPainter extends CustomPainter {
     for (double y = 0; y <= size.height; y += grid) {
       canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
+  }
 
-    // Corner brackets
+  @override
+  bool shouldRepaint(covariant _GridPainter oldDelegate) =>
+      oldDelegate.color != color;
+}
+
+class _CornerBracketsPainter extends CustomPainter {
+  final Color color;
+  _CornerBracketsPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
     final bracket = Path();
     const corner = 28.0;
     const len = 46.0;
-    void addCorner(double dx, double dy, bool right, bool bottom) {
+    void addCorner(bool right, bool bottom) {
       final ox = right ? size.width - corner : corner;
       final oy = bottom ? size.height - corner : corner;
       final dirX = right ? -1 : 1;
@@ -291,12 +322,12 @@ class _ScanOverlayPainter extends CustomPainter {
       bracket.lineTo(ox, oy + len * dirY);
     }
 
-    addCorner(0, 0, false, false);
-    addCorner(0, 0, true, false);
-    addCorner(0, 0, false, true);
-    addCorner(0, 0, true, true);
+    addCorner(false, false);
+    addCorner(true, false);
+    addCorner(false, true);
+    addCorner(true, true);
     final bracketPaint = Paint()
-      ..color = color.withAlpha(204)
+      ..color = color
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3
       ..strokeJoin = StrokeJoin.round
@@ -305,6 +336,6 @@ class _ScanOverlayPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _ScanOverlayPainter oldDelegate) =>
+  bool shouldRepaint(covariant _CornerBracketsPainter oldDelegate) =>
       oldDelegate.color != color;
 }
