@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -7,116 +8,309 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final neonGreen = const Color(0xFF00FF88);
+    final darkBg = const Color(0xFF0B0F13);
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Traffic Sign Detector',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: darkBg,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: neonGreen,
+          brightness: Brightness.dark,
+          primary: neonGreen,
+          secondary: neonGreen,
+          background: darkBg,
+        ),
+        textTheme: GoogleFonts.orbitronTextTheme(
+          ThemeData.dark().textTheme,
+        ).apply(bodyColor: neonGreen, displayColor: neonGreen),
+        appBarTheme: AppBarTheme(
+          backgroundColor: darkBg.withOpacity(0.9),
+          elevation: 0,
+          titleTextStyle: GoogleFonts.orbitron(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: neonGreen,
+            letterSpacing: 2,
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style:
+              ElevatedButton.styleFrom(
+                foregroundColor: darkBg,
+                backgroundColor: neonGreen,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 28,
+                  vertical: 18,
+                ),
+                textStyle: GoogleFonts.orbitron(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1.5,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ).merge(
+                ButtonStyle(
+                  overlayColor: WidgetStateProperty.resolveWith(
+                    (states) => states.contains(WidgetState.pressed)
+                        ? neonGreen.withOpacity(0.2)
+                        : null,
+                  ),
+                ),
+              ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      home: const FuturisticHome(),
     );
   }
+}
+
+class FuturisticHome extends StatelessWidget {
+  const FuturisticHome({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final neonGreen = theme.colorScheme.primary;
+    return Scaffold(
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isVertical =
+              constraints.maxWidth < 900; // stack on small screens
+          final leftWidth = isVertical
+              ? constraints.maxWidth
+              : constraints.maxWidth / 2;
+          final rightWidth = isVertical
+              ? constraints.maxWidth
+              : constraints.maxWidth / 2;
+
+          final preview = Center(
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: neonGreen.withOpacity(0.6),
+                    width: 2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: neonGreen.withOpacity(0.25),
+                      blurRadius: 16,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 0),
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  children: [
+                    // Placeholder scan lines / grid overlay
+                    Positioned.fill(
+                      child: CustomPaint(
+                        painter: _ScanOverlayPainter(
+                          color: neonGreen.withOpacity(0.12),
+                        ),
+                      ),
+                    ),
+                    Center(
+                      child: Text(
+                        '16:9 WINDOW',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          letterSpacing: 4,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+
+          final controls = Container(
+            width: rightWidth,
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withOpacity(0.02),
+                  Colors.white.withOpacity(0.005),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              border: Border(
+                left: isVertical
+                    ? BorderSide.none
+                    : BorderSide(color: neonGreen.withOpacity(0.2), width: 1),
+                top: isVertical
+                    ? BorderSide(color: neonGreen.withOpacity(0.2), width: 1)
+                    : BorderSide.none,
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'TRAFFIC SIGN DETECTOR',
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 6,
+                    shadows: [
+                      Shadow(color: neonGreen.withOpacity(0.6), blurRadius: 12),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 48),
+                Wrap(
+                  spacing: 24,
+                  runSpacing: 24,
+                  alignment: WrapAlignment.center,
+                  children: [
+                    _GlowButton(
+                      label: 'START',
+                      icon: Icons.play_arrow,
+                      onPressed: () {},
+                    ),
+                    _GlowButton(
+                      label: 'START 2',
+                      icon: Icons.bolt,
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 400),
+            child: isVertical
+                ? SingleChildScrollView(
+                    key: const ValueKey('vertical'),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 48,
+                      horizontal: 20,
+                    ),
+                    child: Column(
+                      children: [
+                        SizedBox(width: leftWidth, child: preview),
+                        const SizedBox(height: 56),
+                        controls,
+                      ],
+                    ),
+                  )
+                : Row(
+                    key: const ValueKey('horizontal'),
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: SizedBox(
+                            width: leftWidth * 0.9,
+                            child: preview,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: rightWidth, child: controls),
+                    ],
+                  ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _GlowButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback onPressed;
+  const _GlowButton({
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final neonGreen = Theme.of(context).colorScheme.primary;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: neonGreen.withOpacity(0.4),
+            blurRadius: 20,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, size: 24),
+        label: Text(label),
+      ),
+    );
+  }
+}
+
+class _ScanOverlayPainter extends CustomPainter {
+  final Color color;
+  _ScanOverlayPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+
+    // Draw grid lines
+    const grid = 20.0;
+    for (double x = 0; x <= size.width; x += grid) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+    for (double y = 0; y <= size.height; y += grid) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+
+    // Corner brackets
+    final bracket = Path();
+    const corner = 28.0;
+    const len = 46.0;
+    void addCorner(double dx, double dy, bool right, bool bottom) {
+      final ox = right ? size.width - corner : corner;
+      final oy = bottom ? size.height - corner : corner;
+      final dirX = right ? -1 : 1;
+      final dirY = bottom ? -1 : 1;
+      bracket.moveTo(ox + len * dirX, oy);
+      bracket.lineTo(ox, oy);
+      bracket.lineTo(ox, oy + len * dirY);
+    }
+
+    addCorner(0, 0, false, false);
+    addCorner(0, 0, true, false);
+    addCorner(0, 0, false, true);
+    addCorner(0, 0, true, true);
+    final bracketPaint = Paint()
+      ..color = color.withOpacity(0.8)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3
+      ..strokeJoin = StrokeJoin.round
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
+    canvas.drawPath(bracket, bracketPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ScanOverlayPainter oldDelegate) =>
+      oldDelegate.color != color;
 }
