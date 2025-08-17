@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:camera/camera.dart';
 
 void main() {
   runApp(const MyApp());
@@ -71,8 +72,66 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class FuturisticHome extends StatelessWidget {
+class FuturisticHome extends StatefulWidget {
   const FuturisticHome({super.key});
+
+  @override
+  State<FuturisticHome> createState() => _FuturisticHomeState();
+}
+
+class _FuturisticHomeState extends State<FuturisticHome> {
+  CameraController? _cameraController;
+  bool _initializingCamera = false;
+  bool _detecting = false;
+  String? _error;
+
+  Future<void> _start() async {
+    if (_detecting || _initializingCamera) return;
+    setState(() {
+      _initializingCamera = true;
+      _error = null;
+    });
+    try {
+      final cameras = await availableCameras();
+      // Pick a back camera if available else first.
+      final camera = cameras.firstWhere(
+        (c) => c.lensDirection == CameraLensDirection.back,
+        orElse: () => cameras.first,
+      );
+      final controller = CameraController(
+        camera,
+        ResolutionPreset.medium,
+        enableAudio: false,
+      );
+      await controller.initialize();
+      if (!mounted) return;
+      setState(() {
+        _cameraController = controller;
+        _detecting = true;
+      });
+    } catch (e) {
+      setState(() => _error = 'Camera error: $e');
+    } finally {
+      if (mounted) {
+        setState(() => _initializingCamera = false);
+      }
+    }
+  }
+
+  Future<void> _stop() async {
+    setState(() {
+      _detecting = false;
+    });
+    final controller = _cameraController;
+    _cameraController = null;
+    await controller?.dispose();
+  }
+
+  @override
+  void dispose() {
+    _cameraController?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +161,7 @@ class FuturisticHome extends StatelessWidget {
                 child: AspectRatio(
                   aspectRatio: 16 / 9,
                   child: Container(
+                    clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
                       color: Colors.black,
                       borderRadius: BorderRadius.circular(16),
@@ -118,22 +178,52 @@ class FuturisticHome extends StatelessWidget {
                         ),
                       ],
                     ),
-                    // Placeholder for future live camera feed + corner brackets overlay
                     child: Stack(
+                      fit: StackFit.expand,
                       children: [
-                        Positioned.fill(
-                          child: CustomPaint(
-                            painter: _CornerBracketsPainter(
-                              color: neonGreen.withAlpha(230),
+                        if (_cameraController != null &&
+                            _cameraController!.value.isInitialized)
+                          CameraPreview(_cameraController!)
+                        else
+                          Container(
+                            alignment: Alignment.center,
+                            child: AnimatedOpacity(
+                              duration: const Duration(milliseconds: 400),
+                              opacity: _initializingCamera ? 1 : 0.7,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (_initializingCamera)
+                                    const SizedBox(
+                                      width: 48,
+                                      height: 48,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 3,
+                                      ),
+                                    ),
+                                  if (_initializingCamera)
+                                    const SizedBox(height: 20),
+                                  Text(
+                                    _error ?? 'LIVE FEED',
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(
+                                          letterSpacing: 4,
+                                          fontWeight: FontWeight.w700,
+                                          color: _error != null
+                                              ? Colors.redAccent
+                                              : null,
+                                        ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        Center(
-                          child: Text(
-                            'LIVE FEED',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              letterSpacing: 4,
-                              fontWeight: FontWeight.w700,
+                        Positioned.fill(
+                          child: IgnorePointer(
+                            child: CustomPaint(
+                              painter: _CornerBracketsPainter(
+                                color: neonGreen.withAlpha(230),
+                              ),
                             ),
                           ),
                         ),
@@ -167,43 +257,61 @@ class FuturisticHome extends StatelessWidget {
                         : BorderSide.none,
                   ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      'TRAFFIC SIGN DETECTOR',
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 6,
-                        shadows: [
-                          Shadow(
-                            color: neonGreen.withAlpha(170),
-                            blurRadius: 12,
-                          ),
-                        ],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 48),
-                    Wrap(
-                      spacing: 24,
-                      runSpacing: 24,
-                      alignment: WrapAlignment.center,
-                      children: [
-                        _GlowButton(
-                          label: 'START',
-                          icon: Icons.play_arrow,
-                          onPressed: () {},
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 400),
+                  child: !_detecting
+                      ? Column(
+                          key: const ValueKey('idle'),
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'TRAFFIC SIGN DETECTOR',
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 6,
+                                shadows: [
+                                  Shadow(
+                                    color: neonGreen.withAlpha(170),
+                                    blurRadius: 12,
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 48),
+                            _GlowButton(
+                              label: 'START',
+                              icon: Icons.play_arrow,
+                              onPressed: _start,
+                            ),
+                          ],
+                        )
+                      : Column(
+                          key: const ValueKey('detecting'),
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(
+                              width: 64,
+                              height: 64,
+                              child: CircularProgressIndicator(strokeWidth: 4),
+                            ),
+                            const SizedBox(height: 28),
+                            Text(
+                              'DETECTING...',
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                letterSpacing: 8,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 40),
+                            _GlowButton(
+                              label: 'STOP',
+                              icon: Icons.stop,
+                              onPressed: _stop,
+                            ),
+                          ],
                         ),
-                        _GlowButton(
-                          label: 'START 2',
-                          icon: Icons.bolt,
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                  ],
                 ),
               );
 
