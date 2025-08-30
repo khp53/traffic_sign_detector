@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:camera/camera.dart';
+import 'package:ultralytics_yolo/ultralytics_yolo.dart';
 
 void main() {
   runApp(const MyApp());
@@ -80,7 +80,6 @@ class FuturisticHome extends StatefulWidget {
 }
 
 class _FuturisticHomeState extends State<FuturisticHome> {
-  CameraController? _cameraController;
   bool _initializingCamera = false;
   bool _detecting = false;
   String? _error;
@@ -92,25 +91,16 @@ class _FuturisticHomeState extends State<FuturisticHome> {
       _error = null;
     });
     try {
-      final cameras = await availableCameras();
-      // Pick a back camera if available else first.
-      final camera = cameras.firstWhere(
-        (c) => c.lensDirection == CameraLensDirection.back,
-        orElse: () => cameras.first,
-      );
-      final controller = CameraController(
-        camera,
-        ResolutionPreset.medium,
-        enableAudio: false,
-      );
-      await controller.initialize();
+      // YOLOView handles camera internally, so we just need to set the state
+      await Future.delayed(
+        const Duration(milliseconds: 500),
+      ); // Small delay for UI
       if (!mounted) return;
       setState(() {
-        _cameraController = controller;
         _detecting = true;
       });
     } catch (e) {
-      setState(() => _error = 'Camera error: $e');
+      setState(() => _error = 'Detection error: $e');
     } finally {
       if (mounted) {
         setState(() => _initializingCamera = false);
@@ -122,14 +112,12 @@ class _FuturisticHomeState extends State<FuturisticHome> {
     setState(() {
       _detecting = false;
     });
-    final controller = _cameraController;
-    _cameraController = null;
-    await controller?.dispose();
+    // YOLOView handles camera disposal internally
   }
 
   @override
   void dispose() {
-    _cameraController?.dispose();
+    // YOLOView handles camera disposal internally
     super.dispose();
   }
 
@@ -181,9 +169,19 @@ class _FuturisticHomeState extends State<FuturisticHome> {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        if (_cameraController != null &&
-                            _cameraController!.value.isInitialized)
-                          CameraPreview(_cameraController!)
+                        if (_detecting)
+                          YOLOView(
+                            modelPath: 'yolo11n',
+                            task: YOLOTask.detect,
+                            onResult: (results) {
+                              print('Found ${results.length} objects!');
+                              for (final result in results) {
+                                print(
+                                  '${result.className}: ${result.confidence}',
+                                );
+                              }
+                            },
+                          )
                         else
                           Container(
                             alignment: Alignment.center,
