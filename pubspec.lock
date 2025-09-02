@@ -373,14 +373,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
-  ultralytics_yolo:
-    dependency: "direct main"
-    description:
-      name: ultralytics_yolo
-      sha256: "434ed91994f6ddbb6d787a452e5c7a3ca5270d647a7ca66ddba7275a0f08cd02"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.36"
   vector_math:
     dependency: transitive
     description:
@@ -415,4 +407,4 @@ packages:
     version: "1.1.0"
 sdks:
   dart: ">=3.8.1 <4.0.0"
-  flutter: ">=3.32.1"
+  flutter: ">=3.29.0"
